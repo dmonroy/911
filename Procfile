@@ -1,0 +1,1 @@
+web: gunicorn emergency.web:app -c emergency.gunicorn_config
