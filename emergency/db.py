@@ -10,7 +10,7 @@ settings = get_settings()
 
 
 @asyncio.coroutine
-def get_pool():
+def get_pool():  # pragma: no cover
     '''
     Gets the postgresql connection pool.
 

@@ -1,7 +1,6 @@
 [run]
 omit =
     tests/*
-    emergency/gunicorn_config.py
 
 [report]
 fail_under = 100

@@ -13,12 +13,12 @@ def get_routes():
     ]
 
 
-def main():  # pragma: no cover
+def run_web():  # pragma: no cover
     web.run(web.Application, get_routes())
 
 
 if __name__ == '__main__':  # pragma: no cover
-    main()
+    run_web()
 
 
 if __name__ == 'emergency.web':  # pragma: no cover

@@ -1,5 +1,5 @@
-import multiprocessing
 import os
+import multiprocessing
 
 bind = "127.0.0.1:{}".format(os.getenv('PORT', 8000))
 workers = multiprocessing.cpu_count() * 2 + 1
