@@ -23,9 +23,9 @@ class TestBase(WebTestCase):
     routes = get_routes()
 
     @asynctest
-    def test_view(self):
+    def test_ui_home_view(self):
         resp = yield from request(
-            'GET', self.full_url('/'), loop=self.loop
+            'GET', self.full_url('/ui/'), loop=self.loop
         )
 
         self.assertEqual(resp.status, 200)
@@ -33,6 +33,14 @@ class TestBase(WebTestCase):
         text = yield from resp.text()
 
         self.assertEqual('This is the home!', text)
+
+    @asynctest
+    def test_api_home_view(self):
+        resp = yield from request(
+            'GET', self.full_url('/api/'), loop=self.loop
+        )
+
+        self.assertEqual(resp.status, 200)
 
     def test_import_gunicorn(self):
         # Check that emergency/gunicorn_config.py doesn't raise any exception

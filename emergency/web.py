@@ -7,9 +7,31 @@ class HomeView(web.View):
         return web.Response('This is the home!')
 
 
+class APIIndex(web.Resource):
+
+    def index(self):
+        return web.JSONResponse(
+            dict(objects=[], meta=dict())
+        )
+
+
+def api_routes():
+    return [
+        ['/', APIIndex],
+    ]
+
+
+def ui_routes():
+    return [
+        ['/', HomeView]
+    ]
+
+
 def get_routes():
     return [
-        ['/', HomeView],
+        ['/api{}'.format(item[0]), item[1]] for item in api_routes()
+    ] + [
+        ['/ui{}'.format(item[0]), item[1]] for item in ui_routes()
     ]
 
 
