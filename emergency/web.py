@@ -1,4 +1,5 @@
 from chilero import web
+from emergency import api
 
 
 class HomeView(web.View):
@@ -7,17 +8,9 @@ class HomeView(web.View):
         return web.Response('This is the home!')
 
 
-class APIIndex(web.Resource):
-
-    def index(self):
-        return web.JSONResponse(
-            dict(objects=[], meta=dict())
-        )
-
-
 def api_routes():
     return [
-        ['/', APIIndex],
+        ['/', api.Index],
     ]
 
 
