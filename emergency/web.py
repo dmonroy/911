@@ -1,5 +1,6 @@
-import aiopg
 import asyncio
+
+import aiopg
 from chilero import web
 from emergency import api
 from emergency.db import parse_pgurl

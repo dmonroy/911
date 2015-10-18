@@ -34,6 +34,7 @@ class TestBase(WebTestCase):
         text = yield from resp.text()
 
         self.assertEqual('This is the home!', text)
+        resp.close()
 
     @asynctest
     def test_api_home_view(self):
@@ -42,6 +43,7 @@ class TestBase(WebTestCase):
         )
 
         self.assertEqual(resp.status, 200)
+        resp.close()
 
     def test_import_gunicorn(self):
         # Check that emergency/gunicorn_config.py doesn't raise any exception
@@ -115,6 +117,7 @@ class TestSquadResource(WebTestCase):
         )
 
         self.assertEqual(resp.status, 200)
+        resp.close()
 
     @asynctest
     def test_create(self):
@@ -127,10 +130,12 @@ class TestSquadResource(WebTestCase):
         )
 
         self.assertEqual(resp.status, 200)
+        resp.close()
 
         resp = yield from request(
             'GET', self.full_url('/api/squad/'), loop=self.loop,
         )
 
         self.assertEqual(resp.status, 200)
+        resp.close()
 
