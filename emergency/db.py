@@ -1,8 +1,8 @@
 import os
+import asyncio
 from urllib.parse import urlsplit
 
 import aiopg
-import asyncio
 from schema_migrations import MigrationController
 from emergency.settings import get_settings
 
