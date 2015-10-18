@@ -1,5 +1,11 @@
+import aiopg
+import asyncio
 from chilero import web
 from emergency import api
+from emergency.db import parse_pgurl
+from emergency.settings import get_settings
+
+settings = get_settings()
 
 
 class HomeView(web.View):
@@ -11,6 +17,7 @@ class HomeView(web.View):
 def api_routes():
     return [
         ['/', api.Index],
+        ['/squad/', api.Squad],
     ]
 
 
@@ -28,8 +35,21 @@ def get_routes():
     ]
 
 
+class Application(web.Application):
+
+    @asyncio.coroutine
+    def get_pool(self):  # pragma: no cover
+        if not hasattr(self, '_pool'):
+
+            self._pool = yield from aiopg.create_pool(
+                **parse_pgurl(settings.db_url)
+            )
+
+        return self._pool
+
+
 def run_web():  # pragma: no cover
-    web.run(web.Application, get_routes())
+    web.run(Application, get_routes())
 
 
 if __name__ == '__main__':  # pragma: no cover
@@ -37,4 +57,4 @@ if __name__ == '__main__':  # pragma: no cover
 
 
 if __name__ == 'emergency.web':  # pragma: no cover
-    app = web.Application(routes=get_routes())
+    app = Application(routes=get_routes())

@@ -17,7 +17,7 @@ setup(
     install_requires=[
         'aiopg',
         'attrdict',
-        'chilero',
+        'chilero>=0.1.5',
         'gunicorn',
         'schema-migrations',
         'setuptools',

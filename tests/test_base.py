@@ -4,7 +4,7 @@ from chilero.web.test import WebTestCase, asynctest
 import pytest
 from emergency.db import get_pool
 from emergency.settings import get_settings
-from emergency.web import get_routes
+from emergency.web import get_routes, Application
 
 settings = get_settings()
 
@@ -21,6 +21,7 @@ def conn():
 
 class TestBase(WebTestCase):
     routes = get_routes()
+    application = Application
 
     @asynctest
     def test_ui_home_view(self):
@@ -57,24 +58,22 @@ class TestBase(WebTestCase):
 
 class TestDatabase(WebTestCase):
     routes = get_routes()
+    application = Application
 
-    @pytest.mark.asyncio
+    @asynctest
     def test_database(self):
-        pool = yield from get_pool()
-        conn = yield from pool.acquire()
+        pool = yield from self.app.get_pool()
 
-        with (yield from conn.cursor()) as cur:
+        with (yield from pool.cursor()) as cur:
             yield from cur.execute('select now()')
             r = yield from cur.fetchone()
             assert len(r) == 1
 
-        yield from pool.release(conn)
-
-    @pytest.mark.asyncio
+    @asynctest
     def test_squad_table(self):
-        pool = yield from get_pool()
-        conn = yield from pool.acquire()
-        with (yield from conn.cursor()) as cur:
+        pool = yield from self.app.get_pool()
+
+        with (yield from pool.cursor()) as cur:
             yield from cur.execute('select count(1) from squad')
             r = yield from cur.fetchone()
             assert len(r) == 1
@@ -90,6 +89,48 @@ class TestDatabase(WebTestCase):
             r = yield from cur.fetchone()
             assert len(r) == 1
             assert r[0] == 10
-        yield from pool.release(conn)
 
+
+class TestApiIndex(WebTestCase):
+    routes = get_routes()
+    application = Application
+
+    @asynctest
+    def test_index(self):
+        resp = yield from request(
+            'GET', self.full_url('/api/'), loop=self.loop,
+        )
+
+        self.assertEqual(resp.status, 200)
+
+
+class TestSquadResource(WebTestCase):
+    routes = get_routes()
+    application = Application
+
+    @asynctest
+    def test_index(self):
+        resp = yield from request(
+            'GET', self.full_url('/api/squad/'), loop=self.loop,
+        )
+
+        self.assertEqual(resp.status, 200)
+
+    @asynctest
+    def test_create(self):
+        data = dict(
+            name='New Squad'
+        )
+        resp = yield from request(
+            'POST', self.full_url('/api/squad/'), loop=self.loop,
+            data=data
+        )
+
+        self.assertEqual(resp.status, 200)
+
+        resp = yield from request(
+            'GET', self.full_url('/api/squad/'), loop=self.loop,
+        )
+
+        self.assertEqual(resp.status, 200)
 
