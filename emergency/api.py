@@ -62,3 +62,9 @@ class Squad(DBResource):
                 success=True
             )
         )
+
+
+routes = [
+    ['/', Index],
+    ['/squad/', Squad],
+]
