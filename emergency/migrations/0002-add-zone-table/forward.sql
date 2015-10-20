@@ -1,0 +1,6 @@
+CREATE TABLE zone(
+  id SERIAL NOT NULL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  meta JSONB NOT NULL DEFAULT '{}',
+  UNIQUE (name)
+);
