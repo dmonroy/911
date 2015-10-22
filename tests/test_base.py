@@ -8,20 +8,14 @@ from emergency.web import get_routes, Application
 settings = get_settings()
 
 
-@pytest.fixture
-def conn():
-
-    pool = yield from get_pool()
-    conn = yield from pool.acquire()
-    yield conn
-
-    yield from pool.release(conn)
-
 
 class TestBase(WebTestCase):
+
     routes = get_routes()
     application = Application
 
+
+class TestMisc(TestBase):
     @asynctest
     def test_ui_home_view(self):
         resp = yield from request(
