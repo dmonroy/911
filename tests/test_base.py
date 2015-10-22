@@ -1,5 +1,4 @@
 from aiohttp import request
-import asyncio
 from chilero.web.test import WebTestCase, asynctest
 import pytest
 from emergency.db import get_pool
@@ -58,9 +57,7 @@ class TestBase(WebTestCase):
         from emergency.cli import main
 
 
-class TestDatabase(WebTestCase):
-    routes = get_routes()
-    application = Application
+class TestDatabase(TestBase):
 
     @asynctest
     def test_database(self):
@@ -93,9 +90,7 @@ class TestDatabase(WebTestCase):
             assert r[0] == 10
 
 
-class TestApiIndex(WebTestCase):
-    routes = get_routes()
-    application = Application
+class TestApiIndex(TestBase):
 
     @asynctest
     def test_index(self):
@@ -104,73 +99,3 @@ class TestApiIndex(WebTestCase):
         )
 
         self.assertEqual(resp.status, 200)
-
-
-class TestSquadResource(WebTestCase):
-    routes = get_routes()
-    application = Application
-
-    @asynctest
-    def test_index(self):
-        resp = yield from request(
-            'GET', self.full_url('/api/squad/'), loop=self.loop,
-        )
-
-        self.assertEqual(resp.status, 200)
-        resp.close()
-
-    @asynctest
-    def test_create(self):
-        data = dict(
-            name='New Squad'
-        )
-        resp = yield from request(
-            'POST', self.full_url('/api/squad/'), loop=self.loop,
-            data=data
-        )
-
-        self.assertEqual(resp.status, 200)
-        resp.close()
-
-        resp = yield from request(
-            'GET', self.full_url('/api/squad/'), loop=self.loop,
-        )
-
-        self.assertEqual(resp.status, 200)
-        resp.close()
-
-
-class TestZoneResource(WebTestCase):
-    routes = get_routes()
-    application = Application
-
-    @asynctest
-    def test_index(self):
-        resp = yield from request(
-            'GET', self.full_url('/api/zone/'), loop=self.loop,
-        )
-
-        self.assertEqual(resp.status, 200)
-        resp.close()
-
-    @asynctest
-    def test_create(self):
-        data = dict(
-            name='New Zone',
-            meta={}
-        )
-        resp = yield from request(
-            'POST', self.full_url('/api/zone/'), loop=self.loop,
-            data=data
-        )
-
-        self.assertEqual(resp.status, 200)
-        resp.close()
-
-        resp = yield from request(
-            'GET', self.full_url('/api/zone/'), loop=self.loop,
-        )
-
-        self.assertEqual(resp.status, 200)
-        resp.close()
-
