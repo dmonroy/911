@@ -34,7 +34,10 @@ class DBResource(web.Resource):
             )
         )
 
-    def serialize_list_object(self, row):  # pragma: no cover
+    def serialize_list_object(self, row):
+        return self.serialize_object(row)
+
+    def serialize_object(self, row):  # pragma: no cover
         return row
 
 
@@ -43,7 +46,7 @@ class Squad(DBResource):
     list_query = 'select * from squad'
     object_query = list_query
 
-    def serialize_list_object(self, row):
+    def serialize_object(self, row):
         return dict(
             id=row[0],
             name=row[1],
@@ -73,7 +76,7 @@ class Zone(DBResource):
     list_query = 'select * from zone'
     object_query = list_query
 
-    def serialize_list_object(self, row):
+    def serialize_object(self, row):
         return dict(
             id=row[0],
             name=row[1],
