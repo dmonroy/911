@@ -47,6 +47,7 @@ class Squad(DBResource):
         return dict(
             id=row[0],
             name=row[1],
+            url='/api/squad/{}/'.format(row[0])
         )
 
     def new(self):
@@ -76,7 +77,8 @@ class Zone(DBResource):
         return dict(
             id=row[0],
             name=row[1],
-            meta=row[2]
+            meta=row[2],
+            url='/api/zone/{}/'.format(row[0])
         )
 
     def new(self):
