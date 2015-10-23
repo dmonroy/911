@@ -50,7 +50,7 @@ class Squad(DBResource):
         return dict(
             id=row[0],
             name=row[1],
-            url='/api/squad/{}/'.format(row[0])
+            url='/api/squad/{}'.format(row[0])
         )
 
     def new(self):
