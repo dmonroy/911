@@ -18,6 +18,7 @@ class DBResource(web.Resource):
 
     list_query = None
     object_query = None
+    id_column = 'id'
 
     def index(self):
         pool = yield from self.app.get_pool()
@@ -39,6 +40,22 @@ class DBResource(web.Resource):
 
     def serialize_object(self, row):  # pragma: no cover
         return row
+
+    def show(self, id):
+
+        pool = yield from self.app.get_pool()
+
+        with (yield from pool.cursor()) as cur:
+            yield from cur.execute(
+                '{query} where {id_column} = %s'.format(
+                    query=self.object_query, id_column=self.id_column
+                ), (id,)
+            )
+            squad = yield from cur.fetchone()
+            if squad is None:
+                return web.Response('', status=404)
+            else:
+                return web.JSONResponse(self.serialize_list_object(squad))
 
 
 class Squad(DBResource):
