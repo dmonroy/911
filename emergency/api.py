@@ -98,7 +98,7 @@ class Zone(DBResource):
             id=row[0],
             name=row[1],
             meta=row[2],
-            url='/api/zone/{}/'.format(row[0])
+            url='/api/zone/{}'.format(row[0])
         )
 
     def new(self):
