@@ -67,8 +67,11 @@ class Squad(DBResource):
         return dict(
             id=row[0],
             name=row[1],
-            url='/api/squad/{}'.format(row[0])
+            url=self.object_url(row[0])
         )
+
+    def object_url(self, id):
+        return '/api/squad/{}'.format(id)
 
     def new(self):
         yield from self.request.post()
@@ -78,15 +81,14 @@ class Squad(DBResource):
 
         with (yield from pool.cursor()) as cur:
             yield from cur.execute(
-                'insert into squad (name) values (%s)', (name,)
+                'insert into squad (name) values (%s) returning id', (name,)
             )
+            new_id = (yield from cur.fetchone())[0]
 
-        return web.JSONResponse(
-            dict(
-                success=True
-            )
+        return web.Response(
+            status=201,
+            headers=(('Location', self.object_url(new_id)),)
         )
-
 
 class Zone(DBResource):
 
@@ -98,8 +100,11 @@ class Zone(DBResource):
             id=row[0],
             name=row[1],
             meta=row[2],
-            url='/api/zone/{}'.format(row[0])
+            url=self.object_url(row[0])
         )
+
+    def object_url(self, id):
+        return '/api/zone/{}'.format(id)
 
     def new(self):
         yield from self.request.post()
@@ -113,14 +118,14 @@ class Zone(DBResource):
 
         with (yield from pool.cursor()) as cur:
             yield from cur.execute(
-                'insert into zone (name, meta) values (%s, %s)',
+                'insert into zone (name, meta) values (%s, %s) returning id',
                 (name, Json(meta))
             )
+            new_id = (yield from cur.fetchone())[0]
 
-        return web.JSONResponse(
-            dict(
-                success=True
-            )
+        return web.Response(
+            status=201,
+            headers=(('Location', self.object_url(new_id)),)
         )
 
 

@@ -24,7 +24,7 @@ class TestZoneResource(TestBase):
             data=data
         )
 
-        self.assertEqual(resp.status, 200)
+        self.assertEqual(resp.status, 201)
         resp.close()
 
         resp = yield from request(
@@ -48,7 +48,7 @@ class TestZoneResource(TestBase):
                 data=data
             )
 
-            self.assertEqual(resp.status, 200)
+            self.assertEqual(resp.status, 201)
             resp.close()
 
         resp = yield from request(
@@ -65,7 +65,6 @@ class TestZoneResource(TestBase):
             )
             self.assertEqual(eresp.status, 200)
             ejresp = yield from eresp.json()
-            print(ejresp)
 
             self.assertEquals({'id', 'meta', 'name', 'url'}, set(ejresp.keys()))
 

@@ -25,7 +25,7 @@ class TestSquadResource(TestBase):
             data=data
         )
 
-        self.assertEqual(resp.status, 200)
+        self.assertEqual(resp.status, 201)
         resp.close()
 
         resp = yield from request(
@@ -58,7 +58,7 @@ class TestSquadResource(TestBase):
                 data=data
             )
 
-            self.assertEqual(resp.status, 200)
+            self.assertEqual(resp.status, 201)
             resp.close()
 
         resp = yield from request(
