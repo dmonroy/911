@@ -90,6 +90,7 @@ class Squad(DBResource):
             headers=(('Location', self.object_url(new_id)),)
         )
 
+
 class Zone(DBResource):
 
     list_query = 'select * from zone'
