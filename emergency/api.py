@@ -5,6 +5,7 @@ from psycopg2._json import Json
 
 
 class Index(web.Resource):
+    resource_name = 'api'
 
     def index(self):
         return web.JSONResponse(
@@ -57,8 +58,19 @@ class DBResource(web.Resource):
             else:
                 return web.JSONResponse(self.serialize_list_object(squad))
 
+    def get_resource_name(self):
+        return self.resource_name \
+            if hasattr(self, 'resource_name') \
+            else self.__name__.lower()
+
+    def object_url(self, id):
+        return self.app.reverse(
+            '{}_item'.format(self.get_resource_name()), id=id
+        )
+
 
 class Squad(DBResource):
+    resource_name = 'squad'
 
     list_query = 'select * from squad'
     object_query = list_query
@@ -69,9 +81,6 @@ class Squad(DBResource):
             name=row[1],
             url=self.object_url(row[0])
         )
-
-    def object_url(self, id):
-        return '/api/squad/{}'.format(id)
 
     def new(self):
         yield from self.request.post()
@@ -92,6 +101,7 @@ class Squad(DBResource):
 
 
 class Zone(DBResource):
+    resource_name = 'zone'
 
     list_query = 'select * from zone'
     object_query = list_query
@@ -103,9 +113,6 @@ class Zone(DBResource):
             meta=row[2],
             url=self.object_url(row[0])
         )
-
-    def object_url(self, id):
-        return '/api/zone/{}'.format(id)
 
     def new(self):
         yield from self.request.post()
