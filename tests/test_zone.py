@@ -7,7 +7,7 @@ class TestZoneResource(TestBase):
     @asynctest
     def test_index(self):
         resp = yield from request(
-            'GET', self.full_url('/api/zone/'), loop=self.loop,
+            'GET', self.full_url('/api/zone'), loop=self.loop,
         )
 
         self.assertEqual(resp.status, 200)
@@ -20,7 +20,7 @@ class TestZoneResource(TestBase):
             meta={}
         )
         resp = yield from request(
-            'POST', self.full_url('/api/zone/'), loop=self.loop,
+            'POST', self.full_url('/api/zone'), loop=self.loop,
             data=data
         )
 
@@ -28,7 +28,7 @@ class TestZoneResource(TestBase):
         resp.close()
 
         resp = yield from request(
-            'GET', self.full_url('/api/zone/'), loop=self.loop,
+            'GET', self.full_url('/api/zone'), loop=self.loop,
         )
 
         self.assertEqual(resp.status, 200)
@@ -44,7 +44,7 @@ class TestZoneResource(TestBase):
             )
 
             resp = yield from request(
-                'POST', self.full_url('/api/zone/'), loop=self.loop,
+                'POST', self.full_url('/api/zone'), loop=self.loop,
                 data=data
             )
 
@@ -52,24 +52,24 @@ class TestZoneResource(TestBase):
             resp.close()
 
         resp = yield from request(
-            'GET', self.full_url('/api/zone/'), loop=self.loop,
+            'GET', self.full_url('/api/zone'), loop=self.loop,
         )
 
         self.assertEqual(resp.status, 200)
         jresp = yield from resp.json()
 
-        for element in jresp['objects']:
+        for element in jresp['index']:
             url = element['url']
             eresp = yield from request(
-                'GET', self.full_url(url), loop=self.loop,
+                'GET', url, loop=self.loop,
             )
             self.assertEqual(eresp.status, 200)
             ejresp = yield from eresp.json()
 
-            self.assertEquals({'id', 'meta', 'name', 'url'}, set(ejresp.keys()))
+            self.assertEquals({'id', 'meta', 'name', 'url'}, set(ejresp['body'].keys()))
 
             for k, v in element.items():
-                self.assertEqual(v, ejresp[k])
+                self.assertEqual(v, ejresp['body'][k])
 
             eresp.close()
 

@@ -2,17 +2,7 @@ import json
 
 from chilero import web
 from psycopg2._json import Json
-
-
-class Index(web.Resource):
-    resource_name = 'api'
-
-    def index(self):
-        return web.JSONResponse(
-            dict(
-                squads='/api/squad/'
-            )
-        )
+from aiohttp.web_exceptions import HTTPNotFound
 
 
 class DBResource(web.Resource):
@@ -30,11 +20,7 @@ class DBResource(web.Resource):
             for row in (yield from cur.fetchall()):
                 objects.append(self.serialize_list_object(row))
 
-        return web.JSONResponse(
-            dict(
-                objects=objects
-            )
-        )
+        return self.response(dict(index=objects))
 
     def serialize_list_object(self, row):
         return self.serialize_object(row)
@@ -53,20 +39,11 @@ class DBResource(web.Resource):
                 ), (id,)
             )
             squad = yield from cur.fetchone()
+
             if squad is None:
-                return web.Response('', status=404)
-            else:
-                return web.JSONResponse(self.serialize_list_object(squad))
+                raise HTTPNotFound()
 
-    def get_resource_name(self):
-        return self.resource_name \
-            if hasattr(self, 'resource_name') \
-            else self.__name__.lower()
-
-    def object_url(self, id):
-        return self.app.reverse(
-            '{}_item'.format(self.get_resource_name()), id=id
-        )
+            return self.response(self.serialize_list_object(squad))
 
 
 class Squad(DBResource):
@@ -79,7 +56,7 @@ class Squad(DBResource):
         return dict(
             id=row[0],
             name=row[1],
-            url=self.object_url(row[0])
+            url=self.get_object_url(row[0])
         )
 
     def new(self):
@@ -96,7 +73,7 @@ class Squad(DBResource):
 
         return web.Response(
             status=201,
-            headers=(('Location', self.object_url(new_id)),)
+            headers=(('Location', self.get_object_url(new_id)),)
         )
 
 
@@ -111,7 +88,7 @@ class Zone(DBResource):
             id=row[0],
             name=row[1],
             meta=row[2],
-            url=self.object_url(row[0])
+            url=self.get_object_url(row[0])
         )
 
     def new(self):
@@ -133,12 +110,22 @@ class Zone(DBResource):
 
         return web.Response(
             status=201,
-            headers=(('Location', self.object_url(new_id)),)
+            headers=(('Location', self.get_object_url(new_id)),)
         )
 
 
+class Index(web.Resource):
+    resource_name = 'api'
+
+    nested_collection_resources = dict(
+        squad=Squad,
+        zone=Zone,
+    )
+
+    def index(self):
+        return self.response()
+
+
 routes = [
-    ['/', Index],
-    ['/squad/', Squad],
-    ['/zone/', Zone],
+    ['', Index],
 ]

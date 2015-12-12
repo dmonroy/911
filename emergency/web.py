@@ -1,3 +1,4 @@
+import os
 import asyncio
 
 import aiopg
@@ -11,9 +12,9 @@ settings = get_settings()
 
 def get_routes():
     return [
-        ['/api{}'.format(item[0]), item[1]] for item in api.routes
+        [os.path.join('/api', item[0]), item[1]] for item in api.routes
     ] + [
-        ['/ui{}'.format(item[0]), item[1]] for item in ui.routes
+        [os.path.join('/ui', item[0]), item[1]] for item in ui.routes
     ]
 
 

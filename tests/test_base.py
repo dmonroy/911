@@ -19,7 +19,7 @@ class TestMisc(TestBase):
     @asynctest
     def test_ui_home_view(self):
         resp = yield from request(
-            'GET', self.full_url('/ui/'), loop=self.loop
+            'GET', self.full_url('/ui'), loop=self.loop
         )
 
         self.assertEqual(resp.status, 200)
@@ -32,8 +32,9 @@ class TestMisc(TestBase):
     @asynctest
     def test_api_home_view(self):
         resp = yield from request(
-            'GET', self.full_url('/api/'), loop=self.loop
+            'GET', self.full_url('/api'), loop=self.loop
         )
+        print(self.app.router)
 
         self.assertEqual(resp.status, 200)
         resp.close()
@@ -82,14 +83,3 @@ class TestDatabase(TestBase):
             r = yield from cur.fetchone()
             assert len(r) == 1
             assert r[0] == 10
-
-
-class TestApiIndex(TestBase):
-
-    @asynctest
-    def test_index(self):
-        resp = yield from request(
-            'GET', self.full_url('/api/'), loop=self.loop,
-        )
-
-        self.assertEqual(resp.status, 200)

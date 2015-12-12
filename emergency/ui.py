@@ -8,5 +8,5 @@ class HomeView(web.View):
 
 
 routes = [
-    ['/', HomeView]
+    ['', HomeView]
 ]

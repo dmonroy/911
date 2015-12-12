@@ -8,8 +8,9 @@ class TestSquadResource(TestBase):
 
     @asynctest
     def test_index(self):
+        print(self.full_url('/api/squad'))
         resp = yield from request(
-            'GET', self.full_url('/api/squad/'), loop=self.loop,
+            'GET', self.full_url('/api/squad'), loop=self.loop,
         )
 
         self.assertEqual(resp.status, 200)
@@ -21,7 +22,7 @@ class TestSquadResource(TestBase):
             name='New Squad'
         )
         resp = yield from request(
-            'POST', self.full_url('/api/squad/'), loop=self.loop,
+            'POST', self.full_url('/api/squad'), loop=self.loop,
             data=data
         )
 
@@ -29,17 +30,17 @@ class TestSquadResource(TestBase):
         resp.close()
 
         resp = yield from request(
-            'GET', self.full_url('/api/squad/'), loop=self.loop,
+            'GET', self.full_url('/api/squad'), loop=self.loop,
         )
 
         self.assertEqual(resp.status, 200)
         jresp = yield from resp.json()
 
-        self.assertIn('objects', jresp)
-        self.assertEqual(list, type(jresp['objects']))
-        self.assertGreater(len(jresp['objects']), 0)
+        self.assertIn('index', jresp)
+        self.assertEqual(list, type(jresp['index']))
+        self.assertGreater(len(jresp['index']), 0)
 
-        for element in jresp['objects']:
+        for element in jresp['index']:
             self.assertEquals({'id', 'name', 'url'}, set(element.keys()))
 
         resp.close()
@@ -54,7 +55,7 @@ class TestSquadResource(TestBase):
             )
 
             resp = yield from request(
-                'POST', self.full_url('/api/squad/'), loop=self.loop,
+                'POST', self.full_url('/api/squad'), loop=self.loop,
                 data=data
             )
 
@@ -62,24 +63,24 @@ class TestSquadResource(TestBase):
             resp.close()
 
         resp = yield from request(
-            'GET', self.full_url('/api/squad/'), loop=self.loop,
+            'GET', self.full_url('/api/squad'), loop=self.loop,
         )
 
         self.assertEqual(resp.status, 200)
         jresp = yield from resp.json()
 
-        for element in jresp['objects']:
+        for element in jresp['index']:
             url = element['url']
             eresp = yield from request(
-                'GET', self.full_url(url), loop=self.loop,
+                'GET', url, loop=self.loop,
             )
             self.assertEqual(eresp.status, 200)
             ejresp = yield from eresp.json()
 
-            self.assertEquals({'id', 'name', 'url'}, set(ejresp.keys()))
+            self.assertEquals({'id', 'name', 'url'}, set(ejresp['body'].keys()))
 
             for k, v in element.items():
-                self.assertEqual(v, ejresp[k])
+                self.assertEqual(v, ejresp['body'][k])
 
             eresp.close()
 
